@@ -2,34 +2,112 @@
 title: "Assignment 1"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
+$~$
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(broom)
 library(janitor)
 library(modelr)
+library(kableExtra)
 ```
 
-```{r, include = FALSE}
-bcdata = read_csv("bcdata_Assignment1.csv")
+####### *Loading Dataset*
+```{r}
+bcdata = read_csv("bcdata_Assignment1.csv") %>% 
+  clean_names()
+```
+$~$
+
+# Question 1
+### Constructing Table Providing Summaries 
+```{r, warning = FALSE}
+bcdata %>% 
+  select(!classification) %>% 
+  map_df(.f = ~ broom::tidy(summary(.x)), .id = "Variable") %>% 
+  select(Variable, mean, median, minimum, maximum) %>% 
+  kbl(digits = 3,caption = "Summaries of Quantitative Features") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+$~$
+
+# Question 2 
+### Recoding BMI into WHO-defined categories
+```{r}
+bcdata = bcdata %>% 
+  mutate(bmi_who = as.factor(
+    ifelse(bmi < 16.5, "severely underweight",
+    ifelse(bmi < 18.5, "underweight",
+    ifelse(bmi >= 18.5 & bmi < 24.9, "normal weight",
+    ifelse(bmi >= 25 & bmi < 29.9, "overweight",
+    ifelse(bmi >= 30 & bmi < 34.9, "obesity class I",
+    ifelse(bmi >= 35 & bmi < 39.9, "obesity class II",
+    ifelse (bmi >=40, "obesity class II", "N/A")))))))))
+
+bcdata %>% 
+  select(bmi, bmi_who)
+```
+$~$
+
+# Question 3
+### Bar Chart Shwoing Proportion of Breast Cancer Cases and Controls Within Each BMI Category
+```{r}
+bcdata %>% 
+  group_by(bmi_who) %>% 
+  ggplot(aes(x = fct_relevel(bmi_who, "severely underweight", "underweight", "normal weight", "overweight", "obesity class I", "obesity class II", "obesity class III"),
+             y = prop.table(stat(count)), 
+             fill = factor(classification),
+             label = scales::percent(prop.table(stat(count))))) +
+  geom_bar(position = position_dodge2(width = 0.9)) +
+  geom_text(stat = 'count', position = position_dodge(0.9), vjust = -0.5, size = 3)+
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(labels = c("Healthy Controls", "Breast Cancer Patients")) +
+  labs(title = "Breast Cancer Cases and Controls Within Each BMI Category",
+       x = "BMI (WHO-defined Categories)",
+       y = "Percentage",
+       fill = "Classification")
+```
+$~$
+
+# Question 4
+### Logistic Regression Using Breast Cancer Classification as Outcome and Glucose, HOMA-IR, Leptin, BMI (continuous), and Age as Independent Variables
+```{r}
+bcdata = bcdata %>% 
+  mutate(
+    classification = recode(classification, '1' = '0', '2' = '1', .default = NA_character_),
+    classification = as.numeric(classification))
+
+logmodel = bcdata %>% 
+  glm(classification ~ glucose + homa + leptin + bmi + age, data = ., family = binomial()) %>% 
+  tidy() %>% 
+  filter(term == "homa") %>% 
+  select(term, estimate, std.error) %>%
+  mutate(
+    conf_low = exp(estimate - 1.96*std.error),
+    conf_high = exp(estimate + 1.96*std.error)) %>% 
+  select(-std.error)
+  
+logmodel %>% 
+  kbl(digits = 3, caption = "Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in HOMA-IR") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+$~$
+
+# Question 5
+### Linear Regression Model Using Insulin as Outcome and BMI (continuous), Age, and Glucose as Independent Variables
+```{r}
+linmodel = lm(insulin ~ bmi + age + glucose, data = bcdata) %>% 
+  tidy() %>% 
+  filter(term == "age") %>% 
+  select(term, estimate, std.error) %>%
+  mutate(
+    conf_low = exp(estimate - 1.96*std.error),
+    conf_high = exp(estimate + 1.96*std.error)) %>% 
+  select(-std.error)
+
+linmodel %>% 
+  kbl(digits = 3, caption = "Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in Age") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 ```
 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
