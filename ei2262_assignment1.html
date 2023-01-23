@@ -600,8 +600,9 @@ display: none;
   map_df(.f = ~ broom::tidy(summary(.x)), .id = &quot;Variable&quot;) %&gt;% 
   select(Variable, mean, median, minimum, maximum) %&gt;% 
   kbl(digits = 3,caption = &quot;Summaries of Quantitative Features&quot;) %&gt;% 
-  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
-<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;) %&gt;% 
+  footnote(general = &quot;Age (years), BMI (kg/$m^{2}$), Glucose (mg/dL), Insulin (μm/mL), HOMA-IR, Leptin (ng/mL), Adiponectin (μg/mL), Resistin (ng/mL), MCP-1 (pg/dL)&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
 <caption>
 Summaries of Quantitative Features
 </caption>
@@ -779,6 +780,20 @@ mcp_1
 </td>
 </tr>
 </tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup></sup> Age (years), BMI (kg/<span class="math inline">\(m^{2}\)</span>), Glucose (mg/dL), Insulin (μm/mL),
+HOMA-IR, Leptin (ng/mL), Adiponectin (μg/mL), Resistin (ng/mL), MCP-1
+(pg/dL)
+</td>
+</tr>
+</tfoot>
 </table>
 <p><span class="math inline">\(~\)</span></p>
 </div>
@@ -865,8 +880,8 @@ logmodel = bcdata %&gt;%
   
 logmodel %&gt;% 
   kbl(digits = 3, caption = &quot;Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in HOMA-IR&quot;) %&gt;% 
-  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
-<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+  kable_classic(full_width = T, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; margin-left: auto; margin-right: auto;">
 <caption>
 Beta Estimate and 95% Confidence Interval Associated with 1-unit Change
 in HOMA-IR
@@ -923,8 +938,8 @@ homa
 
 linmodel %&gt;% 
   kbl(digits = 3, caption = &quot;Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in Age&quot;) %&gt;% 
-  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
-<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+  kable_classic(full_width = T, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; margin-left: auto; margin-right: auto;">
 <caption>
 Beta Estimate and 95% Confidence Interval Associated with 1-unit Change
 in Age

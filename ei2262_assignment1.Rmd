@@ -27,7 +27,8 @@ bcdata %>%
   map_df(.f = ~ broom::tidy(summary(.x)), .id = "Variable") %>% 
   select(Variable, mean, median, minimum, maximum) %>% 
   kbl(digits = 3,caption = "Summaries of Quantitative Features") %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  footnote(general = "Age (years), BMI (kg/$m^{2}$), Glucose (mg/dL), Insulin (μm/mL), HOMA-IR, Leptin (ng/mL), Adiponectin (μg/mL), Resistin (ng/mL), MCP-1 (pg/dL)")
 ```
 $~$
 
@@ -89,7 +90,7 @@ logmodel = bcdata %>%
   
 logmodel %>% 
   kbl(digits = 3, caption = "Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in HOMA-IR") %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
+  kable_classic(full_width = T, html_font = "Cambria")
 ```
 $~$
 
@@ -107,7 +108,7 @@ linmodel = lm(insulin ~ bmi + age + glucose, data = bcdata) %>%
 
 linmodel %>% 
   kbl(digits = 3, caption = "Beta Estimate and 95% Confidence Interval Associated with 1-unit Change in Age") %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
+  kable_classic(full_width = T, html_font = "Cambria")
 ```
 
 
